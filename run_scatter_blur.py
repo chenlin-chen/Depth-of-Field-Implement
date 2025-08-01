@@ -17,12 +17,12 @@ def main():
     sub_h, sub_w = int(h/down_scale), int(w/down_scale)
     sub_img = cv2.resize(img, (sub_w, sub_h))
     
-    blur_img = ScatterBlurOptim(sub_img, sub_blur_r)
-    blur_img = cv2.resize(blur_img, (w, h))
+    blured_img = ScatterBlurOptim(sub_img, sub_blur_r)
+    blured_img = cv2.resize(blured_img, (w, h))
     img_name = os.path.splitext(os.path.basename(img_path))[0]
     save_name = f"{img_name}_blurR_{blur_r}.png"
     save_path = os.path.join(output_folder, save_name)
-    cv2.imwrite(save_path, blur_img)
+    cv2.imwrite(save_path, blured_img)
 
     depth_path = "./examples/001_depth.png"
     depth_map = cv2.imread(depth_path, cv2.IMREAD_GRAYSCALE)
@@ -36,9 +36,9 @@ def main():
     blured_img[focal_region] = img[focal_region]
 
     img_name = os.path.splitext(os.path.basename(img_path))[0]
-    save_name = "{img_name}_blurR_{blur_r}_focalD{focal_depth}_focalL{focal_len}.png"
+    save_name = f"{img_name}_blurR_{blur_r}_focalD{focal_depth}_focalL{focal_len}.png"
     save_path = os.path.join(output_folder, save_name)
-    cv2.imwrite(save_path, blur_img)
+    cv2.imwrite(save_path, blured_img)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

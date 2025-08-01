@@ -79,7 +79,6 @@ def decomposeBlur(img: np.ndarray, depth: np.ndarray, focal_depth:int, focal_len
         for i in range(front_band_count):
             d1 = pre_d0
             d0 = max(pre_d0 - front_band_range, 0.0)
-            print(d1, d0)
 
             premultiplied_img, alpha = decompose(img_float, d0, d1)
             blur_img = doBlur(premultiplied_img, alpha, d0)
