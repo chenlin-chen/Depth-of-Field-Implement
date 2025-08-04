@@ -42,15 +42,15 @@ By incorporating **sub-image decomposition** alongside **scatter blur**, the met
 <table>
   <tr>
     <td style="width: 33.33%; vertical-align: top; text-align: center; padding: 2px;">
-      <img src="assets/001_ScatterBlur_radius_20.png" style="width: 100%;"><br>
+      <img src="assets/001_ScatterBlur_radius_20.png" width="600px"><br>
       <strong>1. Scatter Blur Only</strong>
     </td>
     <td style="width: 33.33%; vertical-align: top; text-align: center; padding: 2px;">
-      <img src="assets/001_ScatterBlurWithDepth_radius_20_focalD128_focalL12.png" style="width: 100%;"><br>
+      <img src="assets/001_ScatterBlurWithDepth_radius_20_focalD128_focalL12.png" width="600px"><br>
       <strong>2. Scatter Blur with Depth Map</strong>
     </td>
     <td style="width: 33.33%; vertical-align: top; text-align: center; padding: 2px;">
-      <img src="assets/001_ScatterBlurWithDepthLayers_20_focalD128_focalL12.png" style="width: 100%;"><br>
+      <img src="assets/001_ScatterBlurWithDepthLayers_20_focalD128_focalL12.png" width="600px"><br>
       <strong>3. Depth Map + Sub-image Decomposition</strong>
     </td>
   </tr>
