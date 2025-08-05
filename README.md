@@ -23,12 +23,27 @@ In contrast, **scatter-based blur** *pushes the defocused background outward*, a
       <strong> Depth map from source </strong><br>
     </td>
     <td style="width: 25%; vertical-align: top; text-align: center; padding: 2px;">
-      <img src="assets/001_ScatterBlurWithDepth_radius_20_focalD128_focalL12_example.png" style="width: 100%;"><br>
+      <img src="assets/001_ScatterBlurWithDepth_radius_20_focalD128_focalL12.png" style="width: 100%;"><br>
       <strong>Scatter Blur with Depth </strong><br>
     </td>
-    <td style="width: 33.33%; vertical-align: top; text-align: center; padding: 2px;">
-      <img src="assets/001_GatherBlurWithDepth_radius_20_focalD128_focalL12_example.png" style="width: 100%;"><br>
+    <td style="width: 25%; vertical-align: top; text-align: center; padding: 2px;">
+      <img src="assets/001_GatherBlurWithDepth_radius_20_focalD128_focalL12.png" style="width: 100%;"><br>
       <strong>Gather Blur with Depth </strong><br>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="width: 25%; vertical-align: top; text-align: center; padding: 2px;">
+    </td>
+    <td style="width: 25%; vertical-align: top; text-align: center; padding: 2px;">
+    </td>
+    <td style="width: 25%; vertical-align: top; text-align: center; padding: 2px;">
+      <img src="assets/001_ScatterBlurWithDepth_radius_20_focalD128_focalL12_crop_example.png" style="width: 100%;"><br>
+      <strong>Crop View – Scatter Blur issue</strong><br>
+    </td>
+    <td style="width: 25%; vertical-align: top; text-align: center; padding: 2px;">
+      <img src="assets/001_GatherBlurWithDepth_radius_20_focalD128_focalL12_crop_example.png" style="width: 100%;"><br>
+      <strong>Crop View – Gather Blur issue</strong><br>
     </td>
   </tr>
 </table>
