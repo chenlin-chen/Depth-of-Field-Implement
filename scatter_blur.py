@@ -3,84 +3,68 @@ import os
 
 def sumArea(img:np.ndarray, disk_r: int) -> tuple[np.ndarray, np.ndarray]:
     h, w, c = img.shape
-    sum_table = np.zeros((h,w,c), np.int32)
-    count_table = np.zeros((h,w), np.int32)
-    disk_table = np.zeros((2*disk_r+1), np.int32)
+    extend_size = 2*disk_r
+    sum_table = np.zeros((h + extend_size, w  + extend_size+1, c), np.int32)
+    count_table = np.zeros((h + extend_size, w + extend_size+1 ), np.int32)
 
-    for i, dy in enumerate(range(-disk_r, disk_r+1)):
-        disk_table[i] = int((disk_r*disk_r - dy*dy)**0.5);  
+    for dy in range(-disk_r, disk_r+1):
+        r_x = int((disk_r*disk_r - dy*dy)**0.5 + 0.5)
 
-    for y in range(h):
-        for x in range(w):
-            for i, dy in enumerate(range(-disk_r, disk_r+1)):
-                target_y = y + dy
-                if(target_y < 0 or target_y >= h):
-                    continue
+        sum_table[disk_r+dy:disk_r+dy+h, disk_r-r_x:disk_r-r_x+w] += img 
+        sum_table[disk_r+dy:disk_r+dy+h, disk_r+r_x+1:disk_r+r_x+1+w] -= img 
+        count_table[disk_r+dy:disk_r+dy+h, disk_r-r_x:disk_r-r_x+w] += 1
+        count_table[disk_r+dy:disk_r+dy+h, disk_r+r_x+1:disk_r+r_x+1+w] -= 1
 
-                dx = disk_table[i]
-                x_l = max(x - dx, 0)
-                x_r = min(x + dx, w-1)
-        
-                sum_table[target_y, x_l, :] += img[y, x, :] 
-                count_table[target_y, x_l] += 1
-
-                if(x_r < w-1):
-                    sum_table[target_y, x_r+1, :] -= img[y, x, :]
-                    count_table[target_y, x_r+1] -= 1
+    sum_table = sum_table[disk_r:disk_r+h, :]
+    count_table = count_table[disk_r:disk_r+h, :]
 
     return sum_table, count_table
 
 def ScatterBlurOptim(img:np.ndarray, disk_r:int) -> np.ndarray:
-    sum_area, sum_alpha_area = sumArea(img, disk_r)
+    sum_area, count_area = sumArea(img, disk_r)
 
     sum_area = sum_area.cumsum(axis=1).astype(np.float32)
-    sum_alpha_area = sum_alpha_area.cumsum(axis=1).astype(np.float32)
-    sum_alpha_area[sum_alpha_area == 0.0] = 1.0
+    count_area = count_area.cumsum(axis=1).astype(np.float32)
+    count_area[count_area == 0.0] = 1.0
 
-    blur_img = sum_area / sum_alpha_area[:,:, None]
+    sum_area = sum_area[:, disk_r:-(disk_r+1)]
+    count_area = count_area[:, disk_r:-(disk_r+1)]
+
+    blur_img = sum_area / count_area[:,:, None]
     blur_img = (blur_img + 0.5).astype(np.uint8)
     return blur_img
 
 def sumAreaWithAlpha(img:np.ndarray, alpha:np.ndarray, disk_r: int) -> tuple[np.ndarray, np.ndarray]:
     h, w, c = img.shape
-    sum_table = np.zeros((h,w,c), np.int32)
-    sum_alpha_table = np.zeros((h,w), np.float32)
-    disk_table = np.zeros((2*disk_r+1), np.int32)
 
-    for i, dy in enumerate(range(-disk_r, disk_r+1)):
-        disk_table[i] = int((disk_r*disk_r - dy*dy)**0.5);  
+    extend_size = 2*disk_r
+    sum_table = np.zeros((h + extend_size, w  + extend_size+1, c), np.int32)
+    sum_alpha_table = np.zeros((h + extend_size, w + extend_size+1, 1), np.float32)
 
-    for y in range(h):
-        for x in range(w):
-            if alpha[y][x] == 0.0:
-                continue 
+    for dy in range(-disk_r, disk_r+1):
+        r_x = int((disk_r*disk_r - dy*dy)**0.5 + 0.5)
 
-            for i, dy in enumerate(range(-disk_r, disk_r+1)):
-                target_y = y + dy
-                if(target_y < 0 or target_y >= h):
-                    continue
+        sum_table[disk_r+dy:disk_r+dy+h, disk_r-r_x:disk_r-r_x+w] += img 
+        sum_table[disk_r+dy:disk_r+dy+h, disk_r+r_x+1:disk_r+r_x+1+w] -= img 
+        sum_alpha_table[disk_r+dy:disk_r+dy+h, disk_r-r_x:disk_r-r_x+w] += alpha
+        sum_alpha_table[disk_r+dy:disk_r+dy+h, disk_r+r_x+1:disk_r+r_x+1+w] -= alpha
 
-                dx = disk_table[i]
-                x_l = max(x - dx, 0)
-                x_r = min(x + dx, w-1)
-        
-                sum_table[target_y, x_l, :] += img[y, x, :] 
-                sum_alpha_table[target_y, x_l] += alpha[y][x]
-
-                if(x_r < w-1):
-                    sum_table[target_y, x_r+1, :] -= img[y, x, :]
-                    sum_alpha_table[target_y, x_r+1] -= alpha[y][x]
+    sum_table = sum_table[disk_r:disk_r+h, :]
+    sum_alpha_table = sum_alpha_table[disk_r:disk_r+h, :]
 
     return sum_table, sum_alpha_table
 
 def ScatterBlurOptimWithAlpha(img:np.ndarray, alpha:np.ndarray, disk_r:int) -> np.ndarray:
-    sum_area, count_area = sumAreaWithAlpha(img, alpha, disk_r)
+    sum_area, sum_alpha_area = sumAreaWithAlpha(img, alpha, disk_r)
 
     sum_area = sum_area.cumsum(axis=1).astype(np.float32)
-    count_area = count_area.cumsum(axis=1).astype(np.float32)
-    count_area[count_area == 0] = 1
+    sum_alpha_area = sum_alpha_area.cumsum(axis=1).astype(np.float32)
+    sum_alpha_area[sum_alpha_area == 0] = 1
 
-    blur_img = sum_area / count_area[:,:, None]
+    sum_area = sum_area[:, disk_r:-(disk_r+1)]
+    sum_alpha_area = sum_alpha_area[:, disk_r:-(disk_r+1)]
+
+    blur_img = sum_area / sum_alpha_area
     blur_img = (blur_img + 0.5).astype(np.uint8)
     return blur_img
 
